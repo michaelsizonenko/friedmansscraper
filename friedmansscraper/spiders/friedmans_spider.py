@@ -5,6 +5,13 @@ import validators
 
 class FriedmansSpider(scrapy.Spider):
     name = "twitter"
+    filename = None
+
+    def __init__(self, filename=None, **kwargs):
+        super(FriedmansSpider, self).__init__(**kwargs)
+        if not filename:
+            raise ValueError("%s must have a filename" % type(self).__name__)
+        self.filename = filename
 
     def parse(self, response):
         print("!!! Parse callback !!!")
@@ -15,7 +22,7 @@ class FriedmansSpider(scrapy.Spider):
         email_index = 1
         urls_index = 2
 
-        with open('/home/dethline/software/projects/friedmansscraper/test.csv', 'r') as csvfile:
+        with open(self.filename, 'r') as csvfile:
             reader = csv.reader(csvfile)
             next(reader)
             for row in reader:
