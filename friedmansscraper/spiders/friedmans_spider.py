@@ -14,11 +14,11 @@ class FriedmansSpider(scrapy.Spider):
         self.filename = filename
 
     def parse(self, response):
+        meta = response.meta
         links = response.xpath('//a/@href').extract()
         for link in links:
             if "twitter" in link:
-                print("!! twitter link found !!")
-                print(link)
+                print("!!  twitter link found {}   !!".format(link))
 
     def start_requests(self):
         name_index = 0
@@ -28,8 +28,11 @@ class FriedmansSpider(scrapy.Spider):
         with open(self.filename, 'r') as csvfile:
             reader = csv.reader(csvfile)
             next(reader)
+            counter = 0
             for row in reader:
+                counter += 1
                 meta = {
+                    "row_index": counter,
                     "name": row[name_index],
                     "email": row[email_index]
                 }
