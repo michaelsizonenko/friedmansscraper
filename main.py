@@ -16,6 +16,8 @@ if __name__ == "__main__":
             if ALL_FOUND_TWITTERS not in header:
                 header.append(ALL_FOUND_TWITTERS)
             result_index = header.index(ALL_FOUND_TWITTERS)
+            with open("result.csv", 'w') as result_file:
+                result_file.write(",".join(header) + "\n")
             for row in reader:
                 cmd = ['scrapy', 'crawl', 'twitter', '-a', 'data="'+base64.b64encode(json.dumps(row))+'"']
                 print(" ".join(cmd))
