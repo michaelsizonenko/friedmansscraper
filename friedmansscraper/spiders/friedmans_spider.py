@@ -10,12 +10,12 @@ ALL_FOUND_TWITTERS = "all found twitters"
 
 popular_email_domains = ["gmail.com", "outlook.com", "yahoo.com", "icloud.com", "aol.com", "mail.com"]
 
+
 class FriedmansSpider(scrapy.Spider):
     name = "twitter"
     data = None
     header = []
     result_file = "result.csv"
-    result_index = 0
     current_row = ""
     all_twitter_links = []
 
