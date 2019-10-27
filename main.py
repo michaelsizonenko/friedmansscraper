@@ -16,7 +16,11 @@ if __name__ == "__main__":
         with open(filename, 'r') as csv_file:
             reader = csv.reader(csv_file)
             header = next(reader)
+            index = len(header)
             if ALL_FOUND_TWITTERS not in header:
+                header.append("")
+                header.append("")
+                index = len(header)
                 header.append(ALL_FOUND_TWITTERS)
                 for i in xrange(4):
                     header.append(MATCH_TWITTER + str(i+1))
@@ -25,7 +29,8 @@ if __name__ == "__main__":
             with open("result.csv", 'w') as result_file:
                 result_file.write(",".join(header) + "\n")
             for row in reader:
-                cmd = ['scrapy', 'crawl', 'twitter', '-a', 'data="'+base64.b64encode(json.dumps(row))+'"']
+                cmd = ['scrapy', 'crawl', 'twitter', '-a', 'index={}'.format(index), '-a',
+                       'data="'+base64.b64encode(json.dumps(row))+'"']
                 print(" ".join(cmd))
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
                 p.wait()
