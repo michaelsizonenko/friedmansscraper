@@ -13,6 +13,20 @@ ALL_W = "ALL NAME WORDS MATCH"
 if __name__ == "__main__":
     try:
         filename = sys.argv[1]
+        start_from = 0
+        end_with = 100000
+        continue_parsing = False
+        if len(sys.argv) > 2:
+            start_from = int(sys.argv[2])
+        print("start from {}".format(start_from))
+        if len(sys.argv) > 3:
+            end_with = int(sys.argv[3])
+        print("end with {}".format(end_with))
+        assert start_from < end_with, "Are you serious ?"
+        if len(sys.argv) > 4:
+            print(sys.argv[4])
+            continue_parsing = bool(sys.argv[4])
+            print(continue_parsing)
         with open(filename, 'r') as csv_file:
             reader = csv.reader(csv_file)
             header = next(reader)
@@ -26,9 +40,18 @@ if __name__ == "__main__":
                     header.append(MATCH_TWITTER + str(i+1))
                     header.append(ONE_W)
                     header.append(ALL_W)
-            with open("result.csv", 'w') as result_file:
-                result_file.write(",".join(header) + "\n")
+            if not continue_parsing:
+                with open("result.csv", 'w') as result_file:
+                    result_file.write(",".join(header) + "\n")
+            counter = 0
             for row in reader:
+                counter += 1
+                print(counter)
+                print(start_from)
+                if start_from > counter:
+                    continue
+                if counter > end_with:
+                    continue
                 cmd = ['scrapy', 'crawl', 'twitter', '-a', 'index={}'.format(index), '-a',
                        'data="'+base64.b64encode(json.dumps(row))+'"']
                 print(" ".join(cmd))
