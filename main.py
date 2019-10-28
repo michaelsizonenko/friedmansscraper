@@ -12,7 +12,13 @@ ONE_W = "1 WORD MATCH"
 ALL_W = "ALL NAME WORDS MATCH"
 
 CONFIG_FILE = "config.json"
-CONFIG_PARAMS = {"depth", "name_index", "input_file", "start_from", "continue_processing", "process_until"}
+CONFIG_PARAMS = {"depth",
+                 "name_index",
+                 "input_file",
+                 "start_from",
+                 "continue_processing",
+                 "process_until"
+                 }
 
 if __name__ == "__main__":
     try:

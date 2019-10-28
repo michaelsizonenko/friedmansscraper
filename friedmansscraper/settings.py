@@ -19,7 +19,10 @@ NEWSPIDER_MODULE = 'friedmansscraper.spiders'
 #USER_AGENT = 'friedmansscraper (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
+
+RETRY_ENABLED = False
+DOWNLOAD_TIMEOUT = 10
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32

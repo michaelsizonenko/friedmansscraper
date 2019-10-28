@@ -1,6 +1,6 @@
 {
-  "input_file": "test.csv",
-  "depth": 5,
+  "input_file": "test2.csv",
+  "depth": 1,
   "name_index": 1,
   "start_from": 0,
   "process_until": 1000000,

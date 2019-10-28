@@ -25,13 +25,7 @@ class FriedmansSpider(scrapy.Spider):
     depth = 5
     name_index = 1
 
-    custom_settings = {
-        'DOWNLOAD_TIMEOUT': 10,
-        'RETRY_ENABLED': False,
-        'ROBOTSTXT_OBEY': False
-    }
-
-    def __init__(self, data=None, index=10, depht=5, name_index=1, **kwargs):
+    def __init__(self, data=None, index=10, depth=5, name_index=1, **kwargs):
         super(FriedmansSpider, self).__init__(**kwargs)
         if not data:
             raise ValueError("%s must have a data" % type(self).__name__)
@@ -41,7 +35,7 @@ class FriedmansSpider(scrapy.Spider):
         self.user_name = self.user_name_to_list(self.data[self.name_index])
         self.email_user_name = self.email_user_name_to_list(filter(validators.email, self.data)[0])
         self.index = int(index)
-        self.depth = int(depht)
+        self.depth = int(depth)
 
     def user_name_to_list(self, user_name):
         user_name = user_name.lower().replace("biography", "").replace(".Jr", "").replace(".Sr", "")
