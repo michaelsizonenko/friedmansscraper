@@ -1,0 +1,8 @@
+{
+  "input_file": "test.csv",
+  "depth": 5,
+  "name_index": 1,
+  "start_from": 0,
+  "process_until": 1000000,
+  "continue_processing": false
+}
