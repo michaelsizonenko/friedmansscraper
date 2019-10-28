@@ -59,13 +59,20 @@ class FriedmansSpider(scrapy.Spider):
         while len(self.data) < self.index:
             self.data.append("")
         match_twitter = ["; ".join(twitter_links)]
+        self.logger.debug(self.user_name)
+        self.logger.debug(self.email_user_name)
         for tw_item in twitter_links:
+            self.logger.debug(tw_item)
             any_flag = any(sub_name in tw_item for sub_name in self.user_name)
+            self.logger.debug(any_flag)
             any_flag = any_flag or any(sub_name in tw_item for sub_name in self.email_user_name)
+            self.logger.debug(any_flag)
             all_flag = all(sub_name in tw_item for sub_name in self.user_name)
+            self.logger.debug(all_flag)
             all_flag = all_flag or all(sub_name in tw_item for sub_name in self.email_user_name)
+            self.logger.debug(all_flag)
             if any_flag:
-                match_twitter += [tw_item, any_flag, all_flag]
+                match_twitter += [tw_item, str(any_flag), str(all_flag)]
         self.data += match_twitter
         self.logger.debug(self.data)
         with open(self.result_file, 'a') as result_file:
@@ -124,9 +131,11 @@ class FriedmansSpider(scrapy.Spider):
             self.logger.info("!! urls {}".format(urls))
             try:
                 email_domain = filter(validators.email, self.data)[0].split("@")[1]
-                if email_domain not in popular_email_domains and email_domain not in "\n".join(urls):
+                if email_domain not in popular_email_domains:
                     self.requested_urls.add("https://" + email_domain)
                     yield scrapy.Request(url="https://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
+                    self.requested_urls.add("http://" + email_domain)
+                    yield scrapy.Request(url="http://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
             except Exception, e:
                 self.logger.exception(e.message)
             for url in urls:

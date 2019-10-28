@@ -62,8 +62,8 @@ if __name__ == "__main__":
             counter = 0
             for row in reader:
                 counter += 1
-                print(counter)
-                print(start_from)
+                print(counter, start_from)
+                print(row)
                 if start_from > counter:
                     continue
                 if counter > process_until:
