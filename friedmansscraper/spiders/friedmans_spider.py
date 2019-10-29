@@ -96,7 +96,6 @@ class FriedmansSpider(scrapy.Spider):
     def parse(self, response, depth=1):
         self.logger.debug("! Parse callback for URL: {} !".format(response.request.url))
         self.logger.debug("depth : {}".format(depth))
-        # self.all_twitter_links += filter(lambda x: "twitter" in x, response.xpath('//a/@href').extract())
         all_links = response.xpath('//a/@href').extract()
         self.logger.debug(all_links)
         o = urlparse(response.request.url)
@@ -132,8 +131,8 @@ class FriedmansSpider(scrapy.Spider):
             try:
                 email_domain = filter(validators.email, self.data)[0].split("@")[1]
                 if email_domain not in popular_email_domains:
-                    self.requested_urls.add("https://" + email_domain)
-                    yield scrapy.Request(url="https://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
+                    # self.requested_urls.add("https://" + email_domain)
+                    # yield scrapy.Request(url="https://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
                     self.requested_urls.add("http://" + email_domain)
                     yield scrapy.Request(url="http://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
             except Exception, e:
