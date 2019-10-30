@@ -22,8 +22,8 @@ NEWSPIDER_MODULE = 'friedmansscraper.spiders'
 ROBOTSTXT_OBEY = False
 
 RETRY_ENABLED = False
-DOWNLOAD_TIMEOUT = 30
-RETRY_TIMES = 3
+DOWNLOAD_TIMEOUT = 15
+RETRY_TIMES = 1
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32

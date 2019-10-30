@@ -2,7 +2,7 @@
   "input_file": "input3.csv",
   "depth": 3,
   "name_index": 1,
-  "start_from": 1979,
+  "start_from": 2810,
   "process_until": 3001,
   "continue_processing": true
 }
