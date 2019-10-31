@@ -68,7 +68,8 @@ class FriedmansSpider(scrapy.Spider):
         self.logger.info(self.data)
         self.name_index = int(name_index)
         self.user_name = user_name_to_list(self.data[self.name_index])
-        self.email_user_name = email_user_name_to_list(filter(validators.email, self.data)[0])
+        if len(filter(validators.email, self.data)) > 0:
+            self.email_user_name = email_user_name_to_list(filter(validators.email, self.data)[0])
         self.index = int(index)
         self.depth = int(depth)
 
@@ -155,12 +156,14 @@ class FriedmansSpider(scrapy.Spider):
             urls = filter(validators.url, self.data)
             self.logger.info("!! urls {}".format(urls))
             try:
-                email_domain = filter(validators.email, self.data)[0].split("@")[1]
-                if email_domain not in popular_email_domains:
-                    self.requested_urls.add("https://" + email_domain)
-                    yield scrapy.Request(url="https://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
-                    self.requested_urls.add("http://" + email_domain)
-                    yield scrapy.Request(url="http://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
+                email_domain_list = filter(validators.email, self.data)
+                if len(email_domain_list) > 0:
+                    email_domain = email_domain_list[0].split("@")[1]
+                    if email_domain not in popular_email_domains:
+                        self.requested_urls.add("https://" + email_domain)
+                        yield scrapy.Request(url="https://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
+                        self.requested_urls.add("http://" + email_domain)
+                        yield scrapy.Request(url="http://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
             except Exception, e:
                 self.logger.exception(e.message)
             for url in urls:
