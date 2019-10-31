@@ -3,44 +3,47 @@ import json
 import validators
 import base64
 from urlparse import urlparse
-
 from scrapy import signals
+
+from friedmansscraper.utils import *
 
 ALL_FOUND_TWITTERS = "all found twitters"
 popular_email_domains = ["gmail.com", "outlook.com", "yahoo.com", "icloud.com", "aol.com", "mail.com", "msn.com",
                          "hotmail.com", " charter.net", "verizon.net", "alltel.net", "optimumonline.net", "new.rr.com",
                          "rr.com"]
-ignore_links = ['https://twitter.com/share', 'twitter.com/search', 'twitter.com/intent', 'https://twitter.com',
-                'https://twitter.com/', 'https://twitter.com/about', 'https://twitter.com/account',
-                'https://twitter.com/accounts', 'https://twitter.com/activity', 'https://twitter.com/all',
-                'https://twitter.com/announcements', 'https://twitter.com/anywhere', 'https://twitter.com/api_rules',
-                'https://twitter.com/api_terms', 'https://twitter.com/apirules', 'https://twitter.com/apps',
-                'https://twitter.com/auth', 'https://twitter.com/badges', 'https://twitter.com/blog',
-                'https://twitter.com/business', 'https://twitter.com/buttons', 'https://twitter.com/contacts',
-                'https://twitter.com/devices', 'https://twitter.com/direct_messages', 'https://twitter.com/download',
-                'https://twitter.com/downloads', 'https://twitter.com/edit_announcements', 'https://twitter.com/faq',
-                'https://twitter.com/favorites', 'https://twitter.com/find_sources', 'https://twitter.com/find_users',
-                'https://twitter.com/followers', 'https://twitter.com/following', 'https://twitter.com/friend_request',
-                'https://twitter.com/friendrequest', 'https://twitter.com/friends', 'https://twitter.com/goodies',
-                'https://twitter.com/help', 'https://twitter.com/home', 'https://twitter.com/im_account',
-                'https://twitter.com/inbox', 'https://twitter.com/invitations', 'https://twitter.com/invite',
-                'https://twitter.com/jobs', 'https://twitter.com/list', 'https://twitter.com/login',
-                'https://twitter.com/logo', 'https://twitter.com/logout', 'https://twitter.com/me',
-                'https://twitter.com/mentions', 'https://twitter.com/messages', 'https://twitter.com/mockview',
-                'https://twitter.com/newtwitter', 'https://twitter.com/notifications', 'https://twitter.com/nudge',
-                'https://twitter.com/oauth', 'https://twitter.com/phoenix_search', 'https://twitter.com/positions',
-                'https://twitter.com/privacy', 'https://twitter.com/public_timeline',
-                'https://twitter.com/related_tweets', 'https://twitter.com/replies',
-                'https://twitter.com/retweeted_of_mine', 'https://twitter.com/retweets',
-                'https://twitter.com/retweets_by_others', 'https://twitter.com/rules',
-                'https://twitter.com/saved_searches', 'https://twitter.com/search', 'https://twitter.com/sent',
-                'https://twitter.com/settings', 'https://twitter.com/share', 'https://twitter.com/signup',
-                'https://twitter.com/signin', 'https://twitter.com/similar_to', 'https://twitter.com/statistics',
-                'https://twitter.com/terms', 'https://twitter.com/tos', 'https://twitter.com/translate',
-                'https://twitter.com/trends', 'https://twitter.com/tweetbutton', 'https://twitter.com/twttr',
-                'https://twitter.com/update_discoverability', 'https://twitter.com/users',
-                'https://twitter.com/welcome', 'https://twitter.com/who_to_follow', 'https://twitter.com/widgets',
-                'https://twitter.com/zendesk_auth', 'https://twitter.com/media_signup']
+ignore_links = [
+    'https://twitter.com/share', 'twitter.com/search', 'twitter.com/intent', 'https://twitter.com',
+    'https://twitter.com/', 'https://twitter.com/about', 'https://twitter.com/account',
+    'https://twitter.com/accounts', 'https://twitter.com/activity', 'https://twitter.com/all',
+    'https://twitter.com/announcements', 'https://twitter.com/anywhere', 'https://twitter.com/api_rules',
+    'https://twitter.com/api_terms', 'https://twitter.com/apirules', 'https://twitter.com/apps',
+    'https://twitter.com/auth', 'https://twitter.com/badges', 'https://twitter.com/blog',
+    'https://twitter.com/business', 'https://twitter.com/buttons', 'https://twitter.com/contacts',
+    'https://twitter.com/devices', 'https://twitter.com/direct_messages', 'https://twitter.com/download',
+    'https://twitter.com/downloads', 'https://twitter.com/edit_announcements', 'https://twitter.com/faq',
+    'https://twitter.com/favorites', 'https://twitter.com/find_sources', 'https://twitter.com/find_users',
+    'https://twitter.com/followers', 'https://twitter.com/following', 'https://twitter.com/friend_request',
+    'https://twitter.com/friendrequest', 'https://twitter.com/friends', 'https://twitter.com/goodies',
+    'https://twitter.com/help', 'https://twitter.com/home', 'https://twitter.com/im_account',
+    'https://twitter.com/inbox', 'https://twitter.com/invitations', 'https://twitter.com/invite',
+    'https://twitter.com/jobs', 'https://twitter.com/list', 'https://twitter.com/login',
+    'https://twitter.com/logo', 'https://twitter.com/logout', 'https://twitter.com/me',
+    'https://twitter.com/mentions', 'https://twitter.com/messages', 'https://twitter.com/mockview',
+    'https://twitter.com/newtwitter', 'https://twitter.com/notifications', 'https://twitter.com/nudge',
+    'https://twitter.com/oauth', 'https://twitter.com/phoenix_search', 'https://twitter.com/positions',
+    'https://twitter.com/privacy', 'https://twitter.com/public_timeline',
+    'https://twitter.com/related_tweets', 'https://twitter.com/replies',
+    'https://twitter.com/retweeted_of_mine', 'https://twitter.com/retweets',
+    'https://twitter.com/retweets_by_others', 'https://twitter.com/rules',
+    'https://twitter.com/saved_searches', 'https://twitter.com/search', 'https://twitter.com/sent',
+    'https://twitter.com/settings', 'https://twitter.com/share', 'https://twitter.com/signup',
+    'https://twitter.com/signin', 'https://twitter.com/similar_to', 'https://twitter.com/statistics',
+    'https://twitter.com/terms', 'https://twitter.com/tos', 'https://twitter.com/translate',
+    'https://twitter.com/trends', 'https://twitter.com/tweetbutton', 'https://twitter.com/twttr',
+    'https://twitter.com/update_discoverability', 'https://twitter.com/users',
+    'https://twitter.com/welcome', 'https://twitter.com/who_to_follow', 'https://twitter.com/widgets',
+    'https://twitter.com/zendesk_auth', 'https://twitter.com/media_signup'
+]
 
 
 class FriedmansSpider(scrapy.Spider):
@@ -64,19 +67,10 @@ class FriedmansSpider(scrapy.Spider):
         self.data = json.loads(base64.b64decode(data))
         self.logger.info(self.data)
         self.name_index = int(name_index)
-        self.user_name = self.user_name_to_list(self.data[self.name_index])
-        self.email_user_name = self.email_user_name_to_list(filter(validators.email, self.data)[0])
+        self.user_name = user_name_to_list(self.data[self.name_index])
+        self.email_user_name = email_user_name_to_list(filter(validators.email, self.data)[0])
         self.index = int(index)
         self.depth = int(depth)
-
-    def user_name_to_list(self, user_name):
-        user_name = user_name.lower().replace("biography", "").replace(".Jr", "").replace(".Sr", "")
-        return filter(lambda x: x != "", user_name.split(" "))
-
-    def email_user_name_to_list(self, email):
-        user_name = email.split("@")[0]
-        user_name = user_name.replace("_", " ").replace(".", " ")
-        return self.user_name_to_list(user_name)
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -136,11 +130,11 @@ class FriedmansSpider(scrapy.Spider):
             for link in all_links:
                 if self.validate_absolute_links(root_url, link):
                     self.requested_urls.add(link)
-                    yield scrapy.Request(url=link, callback=self.parse, cb_kwargs={"depth": depth+1})
+                    yield scrapy.Request(url=link, callback=self.parse, cb_kwargs={"depth": depth + 1})
                 elif self.validate_relative_links(root_url, link):
                     link = root_url + link
                     self.requested_urls.add(link)
-                    yield scrapy.Request(url=link, callback=self.parse, cb_kwargs={"depth": depth+1})
+                    yield scrapy.Request(url=link, callback=self.parse, cb_kwargs={"depth": depth + 1})
         twitter_links = filter(lambda x: "twitter.com" in x, all_links)
         self.logger.debug(twitter_links)
         twitter_links = [x.split("?")[0] if "?" in x else x for x in twitter_links]
@@ -163,8 +157,8 @@ class FriedmansSpider(scrapy.Spider):
             try:
                 email_domain = filter(validators.email, self.data)[0].split("@")[1]
                 if email_domain not in popular_email_domains:
-                    # self.requested_urls.add("https://" + email_domain)
-                    # yield scrapy.Request(url="https://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
+                    self.requested_urls.add("https://" + email_domain)
+                    yield scrapy.Request(url="https://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
                     self.requested_urls.add("http://" + email_domain)
                     yield scrapy.Request(url="http://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
             except Exception, e:
