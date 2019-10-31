@@ -1,6 +1,6 @@
 import unittest
-from spiders.friedmans_spider import *
-from utils import *
+from friedmansscraper.spiders.friedmans_spider import *
+from friedmansscraper.utils import *
 
 
 class TestParser(unittest.TestCase):
