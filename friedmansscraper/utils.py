@@ -3,11 +3,11 @@ import unicodedata
 from urlparse import urlparse, urljoin
 
 
-IGNORE_LINK_PATHS = {'/activity', '/login', '/direct_messages', '/similar_to', '/tweetbutton', '/notifications',
-                     '/media_signup', '/apirules', '/rules', '/devices', '/welcome', '/logo', '/replies', '/logout',
-                     '/statistics', '/intent/tweet', '/following', '/search', '/intent/retweet', '/signup', '/contacts',
-                     '/privacy', '/help', '/trends', '/anywhere', '/buttons', '/mentions', '/users', '/me',
-                     '/retweets_by_others', '/account', '/faq', '/saved_searches', '/related_tweets',
+IGNORE_LINK_PATHS = {'', '/', '/activity', '/login', '/direct_messages', '/similar_to', '/tweetbutton',
+                     '/notifications', '/media_signup', '/apirules', '/rules', '/devices', '/welcome', '/logo',
+                     '/replies', '/logout', '/statistics', '/intent/tweet', '/following', '/search', '/intent/retweet',
+                     '/signup', '/contacts', '/privacy', '/help', '/trends', '/anywhere', '/buttons', '/mentions',
+                     '/users', '/me', '/retweets_by_others', '/account', '/faq', '/saved_searches', '/related_tweets',
                      '/retweeted_of_mine', '/accounts', '/announcements', '/business', '/retweets', '/newtwitter',
                      '/messages', '/zendesk_auth', '/followers', '/tos', '/edit_announcements', '/inbox', '/download',
                      '/positions', '/favorites', '/goodies', '/about', '/auth', '/blog', '/home', '/sent', '/mockview',
@@ -16,17 +16,36 @@ IGNORE_LINK_PATHS = {'/activity', '/login', '/direct_messages', '/similar_to', '
                      '/intent/like', '/im_account', '/intent', '/downloads', '/terms', '/', '/messages/compose',
                      '/list', '/find_users', '/update_discoverability', '/phoenix_search', '/intent/user', '/share',
                      '/api_rules', '/oauth', '/badges', '/public_timeline', '/apps', '/intent/follow', '/friendrequest',
-                     '/invite', '/', ''}
+                     '/invite', '/intent/favorite'}
+
+NAME_WORDS_TO_IGNORE = ["'s", "s'", "'", ".", "jr", "sr", "biography", "vote smart", "votes", "vote", "commissioner"]
 
 
 def user_name_to_list(user_name):
-    user_name = user_name.lower().replace("biography", "").replace(".Jr", "").replace(".Sr", "")
-    return filter(lambda x: x != "", user_name.split(" "))
+    if not (isinstance(user_name, str) or isinstance(user_name, unicode)):
+        raise TypeError("String or unicode expected. {} found".format(type(user_name)))
+    if isinstance(user_name, unicode):
+        user_name = unicodedata.normalize('NFKD', user_name).encode('ascii', 'ignore')
+    user_name = user_name.lower()
+    user_name = user_name.replace("s's", "s")
+    user_name = user_name.replace("s'", "s")
+    for n in NAME_WORDS_TO_IGNORE:
+        user_name = user_name.replace(n, "")
+    result_list = set(filter(lambda x: x != "", user_name.split(" ")))
+    result_list.discard("-")
+    return result_list
 
 
 def email_user_name_to_list(email):
+    if not (isinstance(email, str) or isinstance(email, unicode)):
+        raise TypeError("String or unicode expected. {} found".format(type(email)))
+    if isinstance(email, unicode):
+        user_name = unicodedata.normalize('NFKD', email).encode('ascii', 'ignore')
+    if not validators.email(email):
+        raise TypeError("Invalid e-mail. {} found".format(email))
     user_name = email.split("@")[0]
-    user_name = user_name.replace("_", " ").replace(".", " ")
+    user_name = user_name.replace("_", " ").replace(".", " ").replace("-", " ")
+    user_name = ''.join([i for i in user_name if not i.isdigit()])
     return user_name_to_list(user_name)
 
 
@@ -49,21 +68,6 @@ def get_urls_from_the_row(row_list):
     return result
 
 
-# url_obj = urlparse(link_candidate)
-#             if url_obj.netloc == 'twitter.com':
-#                 # removing mobile. and www. is here
-#                 twitter_links.add('twitter.com' + str(url_obj.path).lower())
-#         twitter_links = filter(lambda x: "twitter.com" in x, all_links)
-#         self.logger.debug(twitter_links)
-#         twitter_links = [x.split("?")[0] if "?" in x else x for x in twitter_links]
-#         self.logger.debug(twitter_links)
-#         for link in twitter_links:
-#             if "/status/" in link:
-#                 link = link.split("/status/")[0]
-#             if link not in ignore_links:
-#                 self.all_twitter_links.add("https://" + link)
-
-
 def check_is_twitter(link_candidate):
     if not (isinstance(link_candidate, str) or isinstance(link_candidate, unicode)):
         raise TypeError("String or unicode expected. Found {}".format(type(link_candidate)))
@@ -74,9 +78,14 @@ def check_is_twitter(link_candidate):
     link_candidate = link_candidate.replace("/#!/", "/")
     parsed = urlparse(link_candidate)
     netloc, path = parsed.netloc, parsed.path.lower()
-    print(parsed)
     if "twitter.com" not in netloc:
         return
     if path in IGNORE_LINK_PATHS:
         return
+    if "/status/" in path:
+        path = path.split("/status/")[0]
     return urljoin("https://twitter.com", path)
+
+
+def check_name_in_link(link, name):
+    raise NotImplementedError

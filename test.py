@@ -74,10 +74,55 @@ class TestParser(unittest.TestCase):
         self.assertEqual('https://twitter.com/c_v_c_c', test_result)
         test_result = check_is_twitter(u'http://twitter.com/alabamacounties')
         self.assertEqual('https://twitter.com/alabamacounties', test_result)
+        test_result = check_is_twitter(u'https://twitter.com/nbcolympics/status/1190259907129425920')
+        self.assertEqual('https://twitter.com/nbcolympics', test_result)
 
+    def test_name_in_twitter_link(self):
+        with self.assertRaises(TypeError):
+            email_user_name_to_list()
+        with self.assertRaises(TypeError):
+            email_user_name_to_list("some string")
+        test_result = email_user_name_to_list("mcares@ci.missoula.mt.us")
+        self.assertEqual(test_result, {"mcares"})
+        test_result = email_user_name_to_list("shawn.steffen@griggscountynd.gov")
+        self.assertEqual(test_result, {"shawn", "steffen"})
+        test_result = email_user_name_to_list("Sharon_h@co.redwood.mn.us")
+        self.assertEqual(test_result, {"sharon", "h"})
+        test_result = email_user_name_to_list("Sharon.Middleton@baltimorecity.gov")
+        self.assertEqual(test_result, {"sharon", "middleton"})
+        test_result = email_user_name_to_list("sdowner55@gmail.com")
+        self.assertEqual(test_result, {"sdowner"})
+        test_result = email_user_name_to_list("thomas_thrush@lasallecounty.org")
+        self.assertEqual(test_result, {"thomas", "thrush"})
+        test_result = email_user_name_to_list("tmac_911@hotmail.com")
+        self.assertEqual(test_result, {"tmac"})
+        test_result = email_user_name_to_list("TownManager-Selectmen@townhall.plymouth.ma.us")
+        self.assertEqual(test_result, {"townmanager", "selectmen"})
 
+    def test_extract_name(self):
+        with self.assertRaises(TypeError):
+            user_name_to_list()
+        with self.assertRaises(TypeError):
+            user_name_to_list(123)
+        type_result = user_name_to_list("Bill Tallman")
+        self.assertEqual(type_result, {"bill", "tallman"})
+        type_result = user_name_to_list(u"Bill Tallman")
+        self.assertEqual(type_result, {"bill", "tallman"})
+        type_result = user_name_to_list(u"W. Davis Jr.")
+        self.assertEqual(type_result, {"w", "davis"})
+        type_result = user_name_to_list("Bill Lockett Sr.")
+        self.assertEqual(type_result, {"bill", "lockett"})
+        type_result = user_name_to_list("Mary Chambers' Biography")
+        self.assertEqual(type_result, {"mary", "chambers"})
+        type_result = user_name_to_list("Commissioner Stephen Kelley - Biography - Vote Smart")
+        self.assertEqual(type_result, {"stephen", "kelley"})
+        type_result = user_name_to_list("Fred Thomas' Biography")
+        self.assertEqual(type_result, {"fred", "thomas"})
+        type_result = user_name_to_list("Scheketa Hart-Burns' Biography")
+        self.assertEqual(type_result, {"scheketa", "hart-burns"})
 
-
+    def test_extract_name_from_email(self):
+        pass
 
 
 if __name__ == "__main__":
