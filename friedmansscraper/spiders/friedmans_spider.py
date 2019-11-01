@@ -61,28 +61,27 @@ class FriedmansSpider(scrapy.Spider):
         return spider
 
     def spider_closed(self, spider):
+        spider.logger.info('Spider closed: %s', spider.name)
         twitter_links = self.all_twitter_links
         self.logger.info(twitter_links)
-        spider.logger.info('Spider closed: %s', spider.name)
         while len(self.data) < self.index:
             self.data.append("")
         match_twitter = ["; ".join(twitter_links)]
-        self.logger.debug(self.user_name)
-        self.logger.debug(self.email_user_name)
+        self.logger.debug("Name : {0} ; Name from e-mail : {1}".format(self.user_name, self.email_user_name))
         for tw_item in twitter_links:
-            self.logger.debug(tw_item)
+            # self.logger.debug(tw_item)
             any_flag = any(sub_name in tw_item for sub_name in self.user_name)
-            self.logger.debug(any_flag)
+            # self.logger.debug(any_flag)
             any_flag = any_flag or any(sub_name in tw_item for sub_name in self.email_user_name)
-            self.logger.debug(any_flag)
+            # self.logger.debug(any_flag)
             all_flag = all(sub_name in tw_item for sub_name in self.user_name)
-            self.logger.debug(all_flag)
+            # self.logger.debug(all_flag)
             all_flag = all_flag or all(sub_name in tw_item for sub_name in self.email_user_name)
-            self.logger.debug(all_flag)
+            # self.logger.debug(all_flag)
             if any_flag:
                 match_twitter += [tw_item, str(any_flag), str(all_flag)]
         self.data += match_twitter
-        self.logger.debug(self.data)
+        self.logger.debug("Row : {}".format(self.data))
         with open(self.result_file, 'a') as result_file:
             result_file.write(",".join(self.data) + "\n")
 
@@ -91,6 +90,7 @@ class FriedmansSpider(scrapy.Spider):
                and link not in self.requested_urls \
                and ".pdf" not in link \
                and ".jpg" not in link \
+               and ".png" not in link \
                and ".jpeg" not in link
 
     def validate_relative_links(self, root_url, link):
@@ -99,13 +99,14 @@ class FriedmansSpider(scrapy.Spider):
                and link[0] == "/" and link[1] != "/" \
                and ".pdf" not in link \
                and ".jpg" not in link \
+               and ".png" not in link \
                and ".jpeg" not in link
 
     def parse(self, response, depth=1):
         self.logger.debug("! Parse callback for URL: {} !".format(response.request.url))
-        self.logger.debug("depth : {}".format(depth))
+        self.logger.debug("Parse depth : {}".format(depth))
         all_links = response.xpath('//a/@href').extract()
-        self.logger.debug(all_links)
+        # self.logger.debug(all_links)
         o = urlparse(response.request.url)
         root_url = o.scheme + "://" + o.netloc
         if depth < self.depth:
@@ -117,22 +118,17 @@ class FriedmansSpider(scrapy.Spider):
                     link = root_url + link
                     self.requested_urls.add(link)
                     yield scrapy.Request(url=link, callback=self.parse, cb_kwargs={"depth": depth + 1})
-        twitter_links = set()
-        for link_candidate in twitter_links:
-            url_obj = urlparse(link_candidate)
-            if url_obj.netloc == 'twitter.com':
-                # removing mobile. and www. is here
-                twitter_links.add('twitter.com' + str(url_obj.path).lower())
-        twitter_links = filter(lambda x: "twitter.com" in x, all_links)
-        self.logger.debug(twitter_links)
-        twitter_links = [x.split("?")[0] if "?" in x else x for x in twitter_links]
-        self.logger.debug(twitter_links)
-        for link in twitter_links:
-            if "/status/" in link:
-                link = link.split("/status/")[0]
-            if link not in ignore_links:
-                self.all_twitter_links.add("https://" + link)
-        self.logger.debug(self.all_twitter_links)
+        all_links = filter(lambda x: "twitter" in x, all_links)
+        self.logger.debug("All link candidates : {}".format(all_links))
+        twitter_link_list = set()
+        for link_candidate in all_links:
+            twitter_link = check_is_twitter(link_candidate)
+            self.logger.debug("Twitter link : {}".format(twitter_link))
+            if twitter_link:
+                twitter_link_list.add(twitter_link)
+        self.logger.debug(twitter_link_list)
+        self.all_twitter_links = self.all_twitter_links.union(twitter_link_list)
+        self.logger.debug("Currently found twitter links : {}".format(list(self.all_twitter_links)))
 
     def start_requests(self):
         try:
