@@ -64,6 +64,8 @@ class TestParser(unittest.TestCase):
         self.assertIsNone(test_result)
         test_result = check_is_twitter("https://twitter.com/share")
         self.assertIsNone(test_result)
+        test_result = check_is_twitter("https://twitter.com/hashtag/winter")
+        self.assertIsNone(test_result)
         test_result = check_is_twitter("https://twitter.com/CityofKissimmee")
         self.assertEqual('https://twitter.com/cityofkissimmee', test_result)
         test_result = check_is_twitter("http://www.twitter.com/nbpio")

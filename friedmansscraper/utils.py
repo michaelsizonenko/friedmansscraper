@@ -15,7 +15,7 @@ IGNORE_LINK_PATHS = {'', '/', '/activity', '/login', '/direct_messages', '/simil
                      '/intent/like', '/im_account', '/intent', '/downloads', '/terms', '/', '/messages/compose',
                      '/list', '/find_users', '/update_discoverability', '/phoenix_search', '/intent/user', '/share',
                      '/api_rules', '/oauth', '/badges', '/public_timeline', '/apps', '/intent/follow', '/friendrequest',
-                     '/invite', '/intent/favorite'}
+                     '/invite', '/intent/favorite', '/account/begin_password_reset', '/account/resend_password'}
 
 NAME_WORDS_TO_IGNORE = ["'s", "s'", "'", ".", "jr", "sr", "biography", "vote smart", "votes", "vote", "commissioner"]
 
@@ -80,6 +80,8 @@ def check_is_twitter(link_candidate):
     if "twitter.com" not in netloc:
         return
     if path in IGNORE_LINK_PATHS:
+        return
+    if "https://twitter.com/hashtag/" in link_candidate:
         return
     if "/status/" in path:
         path = path.split("/status/")[0]
