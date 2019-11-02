@@ -145,11 +145,9 @@ class TestParser(unittest.TestCase):
                   "https://twitter.com/lifeatsky/", "https://twitter.com/lifeatsky",
                   "https://twitter.com/focusfeatures", "https://twitter.com/comcasttechsoln",
                   "https://twitter.com/raecomm", "https://twitter.com/nbcsportspr",
-                  "https://twitter.com/comcastcareers",
-                  # "https://twitter.com/workatnbcu",
+                  "https://twitter.com/comcastcareers", "https://twitter.com/easportsfifa",
+                  # "https://twitter.com/workatnbcu", "https://twitter.com/arlowhite",
                   "https://twitter.com/itsskitime", "https://twitter.com/comcast",
-                  "https://twitter.com/easportsfifa",
-                  # "https://twitter.com/arlowhite",
                   "https://twitter.com/profootballtalk", "https://twitter.com/comcastcares"]:
             self.assertIsNone(check_name_in_link(x, {"bill", "tallman"}, {"w", "tallman"}))
 
