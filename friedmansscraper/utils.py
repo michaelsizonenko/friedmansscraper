@@ -30,7 +30,7 @@ def user_name_to_list(user_name):
     user_name = user_name.replace("s'", "s")
     for n in NAME_WORDS_TO_IGNORE:
         user_name = user_name.replace(n, "")
-    result_list = set(filter(lambda x: x != "", user_name.split(" ")))
+    result_list = set(filter(lambda x: len(x) > 2, user_name.split(" ")))
     result_list.discard("-")
     return result_list
 
@@ -88,17 +88,6 @@ def check_is_twitter(link_candidate):
     return urljoin("https://twitter.com", path)
 
 
-# self.logger.debug(tw_item)
-# any_flag = any(sub_name in tw_item for sub_name in self.user_name)
-# self.logger.debug(any_flag)
-# any_flag = any_flag or any(sub_name in tw_item for sub_name in self.email_user_name)
-# self.logger.debug(any_flag)
-# all_flag = all(sub_name in tw_item for sub_name in self.user_name)
-# self.logger.debug(all_flag)
-# all_flag = all_flag or all(sub_name in tw_item for sub_name in self.email_user_name)
-# self.logger.debug(all_flag)
-# if any_flag:
-#     match_twitter += [tw_item, str(any_flag), str(all_flag)]
 def check_name_in_link(link, name, email_name):
     if not (isinstance(link, str) or isinstance(link, unicode)):
         raise TypeError
@@ -111,9 +100,13 @@ def check_name_in_link(link, name, email_name):
     any_flag = False
     all_flag = False
     path = urlparse(link).path
-    any_flag = any(sub_name in path for sub_name in name)
-    any_flag = any_flag or any(sub_name in path for sub_name in email_name)
-    all_flag = all(sub_name in path for sub_name in name)
-    all_flag = all_flag or all(sub_name in path for sub_name in email_name)
+
+    def check(seq, path_):
+        return [sub_name in path_ and len(sub_name) > 2 for sub_name in seq]
+
+    any_flag = any(check(name, path))
+    any_flag = any_flag or any(check(email_name, path))
+    all_flag = all(check(name, path))
+    all_flag = all_flag or all(check(email_name, path))
     if any_flag:
         return [link, str(any_flag), str(all_flag)]
