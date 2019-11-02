@@ -2,7 +2,6 @@ import validators
 import unicodedata
 from urlparse import urlparse, urljoin
 
-
 IGNORE_LINK_PATHS = {'', '/', '/activity', '/login', '/direct_messages', '/similar_to', '/tweetbutton',
                      '/notifications', '/media_signup', '/apirules', '/rules', '/devices', '/welcome', '/logo',
                      '/replies', '/logout', '/statistics', '/intent/tweet', '/following', '/search', '/intent/retweet',
@@ -87,5 +86,32 @@ def check_is_twitter(link_candidate):
     return urljoin("https://twitter.com", path)
 
 
-def check_name_in_link(link, name):
-    raise NotImplementedError
+# self.logger.debug(tw_item)
+# any_flag = any(sub_name in tw_item for sub_name in self.user_name)
+# self.logger.debug(any_flag)
+# any_flag = any_flag or any(sub_name in tw_item for sub_name in self.email_user_name)
+# self.logger.debug(any_flag)
+# all_flag = all(sub_name in tw_item for sub_name in self.user_name)
+# self.logger.debug(all_flag)
+# all_flag = all_flag or all(sub_name in tw_item for sub_name in self.email_user_name)
+# self.logger.debug(all_flag)
+# if any_flag:
+#     match_twitter += [tw_item, str(any_flag), str(all_flag)]
+def check_name_in_link(link, name, email_name):
+    if not (isinstance(link, str) or isinstance(link, unicode)):
+        raise TypeError
+    if not isinstance(name, set):
+        raise TypeError
+    if not isinstance(email_name, set):
+        raise TypeError
+    if not validators.url(link):
+        raise TypeError("URL expected. {} found.".format(link))
+    any_flag = False
+    all_flag = False
+    path = urlparse(link).path
+    any_flag = any(sub_name in path for sub_name in name)
+    any_flag = any_flag or any(sub_name in path for sub_name in email_name)
+    all_flag = all(sub_name in path for sub_name in name)
+    all_flag = all_flag or all(sub_name in path for sub_name in email_name)
+    if any_flag:
+        return [link, str(any_flag), str(all_flag)]

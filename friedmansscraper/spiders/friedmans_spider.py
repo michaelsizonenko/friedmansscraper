@@ -69,17 +69,9 @@ class FriedmansSpider(scrapy.Spider):
         match_twitter = ["; ".join(twitter_links)]
         self.logger.debug("Name : {0} ; Name from e-mail : {1}".format(self.user_name, self.email_user_name))
         for tw_item in twitter_links:
-            # self.logger.debug(tw_item)
-            any_flag = any(sub_name in tw_item for sub_name in self.user_name)
-            # self.logger.debug(any_flag)
-            any_flag = any_flag or any(sub_name in tw_item for sub_name in self.email_user_name)
-            # self.logger.debug(any_flag)
-            all_flag = all(sub_name in tw_item for sub_name in self.user_name)
-            # self.logger.debug(all_flag)
-            all_flag = all_flag or all(sub_name in tw_item for sub_name in self.email_user_name)
-            # self.logger.debug(all_flag)
-            if any_flag:
-                match_twitter += [tw_item, str(any_flag), str(all_flag)]
+            result = check_name_in_link(tw_item, self.user_name, self.email_user_name)
+            if result:
+                match_twitter += result
         self.data += match_twitter
         self.logger.debug("Row : {}".format(self.data))
         with open(self.result_file, 'a') as result_file:

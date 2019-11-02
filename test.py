@@ -98,6 +98,8 @@ class TestParser(unittest.TestCase):
         self.assertEqual(test_result, {"tmac"})
         test_result = email_user_name_to_list("TownManager-Selectmen@townhall.plymouth.ma.us")
         self.assertEqual(test_result, {"townmanager", "selectmen"})
+        test_result = email_user_name_to_list("w.tallman5909@comcast.net")
+        self.assertEqual(test_result, {"w", "tallman"})
 
     def test_extract_name(self):
         with self.assertRaises(TypeError):
@@ -122,7 +124,34 @@ class TestParser(unittest.TestCase):
         self.assertEqual(type_result, {"scheketa", "hart-burns"})
 
     def test_extract_name_from_email(self):
-        pass
+        with self.assertRaises(TypeError):
+            check_name_in_link()
+        with self.assertRaises(TypeError):
+            check_name_in_link(123)
+        with self.assertRaises(TypeError):
+            check_name_in_link(123, 456, 789)
+        with self.assertRaises(TypeError):
+            check_name_in_link("some string", {}, {})
+        self.assertIsNone(check_name_in_link("http://twitter.com/apple", {"david", "williams"}, {"dave"}))
+        test_result = check_name_in_link("http://twitter.com/davidwilliams", {"david", "williams"}, {"dave", "williams"})
+        self.assertEqual(test_result, ["http://twitter.com/davidwilliams", "True", "True"])
+        test_result = check_name_in_link("http://twitter.com/dave", {"david", "williams"}, {"dave", "williams"})
+        self.assertEqual(test_result, ["http://twitter.com/dave", "True", "False"])
+        for x in ["https://twitter.com/pftpm", "https://twitter.com/topgunxv", "https://twitter.com/unistudios",
+                  "https://twitter.com/nascar", "https://twitter.com/nbcsports", "https://twitter.com/xfinity",
+                  "https://twitter.com/leedixon2", "https://twitter.com/xfinityracing",
+                  "https://twitter.com/universalorl", "https://twitter.com/nascaronnbc",
+                  "https://twitter.com/nmlegislature", "https://twitter.com/harrietfilm",
+                  "https://twitter.com/lifeatsky/", "https://twitter.com/lifeatsky",
+                  "https://twitter.com/focusfeatures", "https://twitter.com/comcasttechsoln",
+                  "https://twitter.com/raecomm", "https://twitter.com/nbcsportspr",
+                  "https://twitter.com/comcastcareers",
+                  # "https://twitter.com/workatnbcu",
+                  "https://twitter.com/itsskitime", "https://twitter.com/comcast",
+                  "https://twitter.com/easportsfifa",
+                  # "https://twitter.com/arlowhite",
+                  "https://twitter.com/profootballtalk", "https://twitter.com/comcastcares"]:
+            self.assertIsNone(check_name_in_link(x, {"bill", "tallman"}, {"w", "tallman"}))
 
 
 if __name__ == "__main__":
