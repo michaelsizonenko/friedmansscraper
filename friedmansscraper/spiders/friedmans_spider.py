@@ -1,8 +1,7 @@
 import scrapy
 import json
-import validators
+import tldextract
 import base64
-from urlparse import urlparse
 from scrapy import signals
 
 from friedmansscraper.utils import *
@@ -132,10 +131,21 @@ class FriedmansSpider(scrapy.Spider):
                 if len(email_domain_list) > 0:
                     email_domain = email_domain_list[0].split("@")[1]
                     if email_domain not in popular_email_domains:
-                        self.requested_urls.add("https://" + email_domain)
-                        yield scrapy.Request(url="https://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
-                        self.requested_urls.add("http://" + email_domain)
-                        yield scrapy.Request(url="http://" + email_domain, callback=self.parse, cb_kwargs={"depth": 1})
+                        url_obj = tldextract.extract(email_domain)
+                        if url_obj.subdomain:
+                            self.requested_urls.add("https://" + email_domain)
+                            yield scrapy.Request(url="https://" + email_domain,
+                                                 callback=self.parse, cb_kwargs={"depth": 1})
+                            self.requested_urls.add("http://" + email_domain)
+                            yield scrapy.Request(url="http://" + email_domain,
+                                                 callback=self.parse, cb_kwargs={"depth": 1})
+                        self.requested_urls.add("https://" + url_obj.domain + "." + url_obj.suffix)
+                        yield scrapy.Request(url="https://" + url_obj.domain + "." + url_obj.suffix,
+                                             callback=self.parse, cb_kwargs={"depth": 1})
+                        self.requested_urls.add("http://" + url_obj.domain + "." + url_obj.suffix)
+                        yield scrapy.Request(url="http://" + url_obj.domain + "." + url_obj.suffix,
+                                             callback=self.parse, cb_kwargs={"depth": 1})
+
             except Exception, e:
                 self.logger.exception(e.message)
             for url in urls:
