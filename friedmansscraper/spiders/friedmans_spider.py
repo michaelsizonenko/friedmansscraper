@@ -1,7 +1,7 @@
-import scrapy
 import json
-import tldextract
 import base64
+import scrapy
+import tldextract
 from scrapy import signals
 
 from friedmansscraper.utils import *

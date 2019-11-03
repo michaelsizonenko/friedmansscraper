@@ -12,21 +12,24 @@ ONE_W = "1 WORD MATCH"
 ALL_W = "ALL NAME WORDS MATCH"
 
 CONFIG_FILE = "config.json"
-CONFIG_PARAMS = {"depth",
-                 "name_index",
-                 "input_file",
-                 "start_from",
-                 "continue_processing",
-                 "process_until"
-                 }
+CONFIG_PARAMS = {
+    "depth",
+    "name_index",
+    "input_file",
+    "start_from",
+    "continue_processing",
+    "process_until"
+}
 
 if __name__ == "__main__":
     try:
         assert os.path.exists(CONFIG_FILE), "This is weird! Config file does not exists"
         with open(CONFIG_FILE) as config_file:
             config = json.load(config_file)
-        assert set([x.encode('utf-8') for x in config.keys()]).issubset(CONFIG_PARAMS), "This is weird! Config file contains unexpected params"
-        assert set([x.encode('utf-8') for x in config.keys()]).issuperset(CONFIG_PARAMS), "This is weird! Config file contains not enough params"
+        assert set([x.encode('utf-8') for x in config.keys()]).issubset(
+            CONFIG_PARAMS), "This is weird! Config file contains unexpected params"
+        assert set([x.encode('utf-8') for x in config.keys()]).issuperset(
+            CONFIG_PARAMS), "This is weird! Config file contains not enough params"
         assert os.path.exists(config["input_file"]), "This is weird! The input file does not exists"
         filename = config["input_file"]
         start_from = config["start_from"]
@@ -53,7 +56,7 @@ if __name__ == "__main__":
                 index = len(header)
                 header.append(ALL_FOUND_TWITTERS)
                 for i in xrange(4):
-                    header.append(MATCH_TWITTER + str(i+1))
+                    header.append(MATCH_TWITTER + str(i + 1))
                     header.append(ONE_W)
                     header.append(ALL_W)
             if not continue_processing:
@@ -71,10 +74,10 @@ if __name__ == "__main__":
                 cmd = [
                     'scrapy', 'crawl', 'twitter',
                     '-a', 'index={}'.format(index),
-                    '-a', 'data="'+base64.b64encode(json.dumps(row))+'"',
-                    '-a', 'depth='+str(config["depth"]),
-                    '-a', 'name_index='+str(config["name_index"])
-                       ]
+                    '-a', 'data="' + base64.b64encode(json.dumps(row)) + '"',
+                    '-a', 'depth=' + str(config["depth"]),
+                    '-a', 'name_index=' + str(config["name_index"])
+                ]
                 print(" ".join(cmd))
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
                 p.wait()

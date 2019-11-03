@@ -1,5 +1,4 @@
 import unittest
-from friedmansscraper.spiders.friedmans_spider import *
 from friedmansscraper.utils import *
 from urlparse import urljoin
 
@@ -33,8 +32,10 @@ class TestParser(unittest.TestCase):
         self.assertEqual(test_result,
                          {"http://www.votenewt.com", "http://house.gov/newt.html", "http://www.newtnews.com",
                           "https://google.com"})
-        test_result = get_urls_from_the_row(["http://www.northamptoncounty.org/northampton/cwp/view.asp?a=1518&Q=620119&northamptonNav=|34398|&northamptonNav_GID=1977"])
-        self.assertEqual(test_result, {"http://www.northamptoncounty.org/northampton/cwp/view.asp?a=1518&Q=620119&northamptonNav=|34398|&northamptonNav_GID=1977"})
+        test_result = get_urls_from_the_row([
+                                                "http://www.northamptoncounty.org/northampton/cwp/view.asp?a=1518&Q=620119&northamptonNav=|34398|&northamptonNav_GID=1977"])
+        self.assertEqual(test_result, {
+            "http://www.northamptoncounty.org/northampton/cwp/view.asp?a=1518&Q=620119&northamptonNav=|34398|&northamptonNav_GID=1977"})
 
     def test_is_twitter_account(self):
         with self.assertRaises(TypeError):
@@ -135,7 +136,8 @@ class TestParser(unittest.TestCase):
         with self.assertRaises(TypeError):
             check_name_in_link("some string", {}, {})
         self.assertIsNone(check_name_in_link("http://twitter.com/apple", {"david", "williams"}, {"dave"}))
-        test_result = check_name_in_link("http://twitter.com/davidwilliams", {"david", "williams"}, {"dave", "williams"})
+        test_result = check_name_in_link("http://twitter.com/davidwilliams", {"david", "williams"},
+                                         {"dave", "williams"})
         self.assertEqual(test_result, ["http://twitter.com/davidwilliams", "True", "True"])
         test_result = check_name_in_link("http://twitter.com/dave", {"david", "williams"}, {"dave", "williams"})
         self.assertEqual(test_result, ["http://twitter.com/dave", "True", "False"])
