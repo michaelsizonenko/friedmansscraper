@@ -42,8 +42,7 @@ class TestParser(unittest.TestCase):
             check_is_twitter()
         with self.assertRaises(TypeError):
             check_is_twitter(None)
-        with self.assertRaises(Exception):
-            check_is_twitter("some string")
+        self.assertIsNone(check_is_twitter("some string"))
         self.assertIsNone(check_is_twitter("https://google.com"))
         inappropriate_url_list = [
             "https://twitter.com",

@@ -1,12 +1,9 @@
-Though it’s possible to install Scrapy on Windows using pip, we recommend you to install Anaconda or Miniconda and use the package from the conda-forge channel, which will avoid most installation issues.
+https://scraper24x7.wordpress.com/2016/03/19/how-to-install-scrapy-in-windows/
 
-Once you’ve installed Anaconda or Miniconda, install Scrapy with:
+Additional packages to install:
 
-conda install -c conda-forge scrapy
+1. pip install scrapy
 
+2. pip install tldextrac
 
-Useful resources :
-
-https://conda-forge.org/
-https://docs.anaconda.com/anaconda/
-https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html
+3. pip install validators

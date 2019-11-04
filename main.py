@@ -16,6 +16,7 @@ CONFIG_PARAMS = {
     "depth",
     "name_index",
     "input_file",
+    "output_file",
     "start_from",
     "continue_processing",
     "process_until"
@@ -31,7 +32,9 @@ if __name__ == "__main__":
         assert set([x.encode('utf-8') for x in config.keys()]).issuperset(
             CONFIG_PARAMS), "This is weird! Config file contains not enough params"
         assert os.path.exists(config["input_file"]), "This is weird! The input file does not exists"
+        assert os.path.exists(config["output_file"]), "This is weird! The output file does not exists"
         filename = config["input_file"]
+        result_filename = config["output_file"]
         start_from = config["start_from"]
         process_until = config["process_until"]
         continue_processing = config["continue_processing"]
@@ -59,8 +62,8 @@ if __name__ == "__main__":
                     header.append(MATCH_TWITTER + str(i + 1))
                     header.append(ONE_W)
                     header.append(ALL_W)
-            if not continue_processing:
-                with open("result.csv", 'w') as result_file:
+            if os.path.isfile(result_filename) and not continue_processing:
+                with open(result_filename, 'w') as result_file:
                     result_file.write(",".join(header) + "\n")
             counter = 0
             for row in reader:
@@ -76,7 +79,8 @@ if __name__ == "__main__":
                     '-a', 'index={}'.format(index),
                     '-a', 'data="' + base64.b64encode(json.dumps(row)) + '"',
                     '-a', 'depth=' + str(config["depth"]),
-                    '-a', 'name_index=' + str(config["name_index"])
+                    '-a', 'name_index=' + str(config["name_index"]),
+                    '-a', 'result_filename=' + result_filename
                 ]
                 print(" ".join(cmd))
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE)

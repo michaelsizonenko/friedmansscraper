@@ -40,10 +40,12 @@ class FriedmansSpider(scrapy.Spider):
     depth = 5
     name_index = 1
 
-    def __init__(self, data=None, index=10, depth=5, name_index=1, **kwargs):
+    def __init__(self, data=None, index=10, depth=5, name_index=1, result_filename=None, **kwargs):
         super(FriedmansSpider, self).__init__(**kwargs)
         if not data:
             raise ValueError("%s must have a data" % type(self).__name__)
+        if not result_filename:
+            raise ValueError("%s must have a result file name" % type(self).__name__)
         self.data = json.loads(base64.b64decode(data))
         self.logger.info(self.data)
         self.name_index = int(name_index)
