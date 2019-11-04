@@ -71,7 +71,7 @@ def check_is_twitter(link_candidate):
     if not (isinstance(link_candidate, str) or isinstance(link_candidate, unicode)):
         raise TypeError("String or unicode expected. Found {}".format(type(link_candidate)))
     if not validators.url(link_candidate):
-        raise Exception("Invalid URL found {}".format(link_candidate))
+        return
     if isinstance(link_candidate, unicode):
         link_candidate = unicodedata.normalize('NFKD', link_candidate).encode('ascii', 'ignore')
     link_candidate = link_candidate.replace("/#!/", "/")
