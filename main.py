@@ -32,7 +32,6 @@ if __name__ == "__main__":
         assert set([x.encode('utf-8') for x in config.keys()]).issuperset(
             CONFIG_PARAMS), "This is weird! Config file contains not enough params"
         assert os.path.exists(config["input_file"]), "This is weird! The input file does not exists"
-        assert os.path.exists(config["output_file"]), "This is weird! The output file does not exists"
         filename = config["input_file"]
         result_filename = config["output_file"]
         start_from = config["start_from"]
@@ -62,7 +61,7 @@ if __name__ == "__main__":
                     header.append(MATCH_TWITTER + str(i + 1))
                     header.append(ONE_W)
                     header.append(ALL_W)
-            if os.path.isfile(result_filename) and not continue_processing:
+            if not (os.path.isfile(result_filename) and continue_processing):
                 with open(result_filename, 'w') as result_file:
                     result_file.write(",".join(header) + "\n")
             counter = 0
