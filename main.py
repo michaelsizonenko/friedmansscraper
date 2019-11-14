@@ -5,6 +5,10 @@ import traceback
 import json
 import base64
 import os
+import time
+
+from friedmansscraper.utils import is_internet_available
+
 
 ALL_FOUND_TWITTERS = "all found twitters"
 MATCH_TWITTER = "match twitter "
@@ -21,6 +25,7 @@ CONFIG_PARAMS = {
     "continue_processing",
     "process_until"
 }
+
 
 if __name__ == "__main__":
     try:
@@ -66,6 +71,9 @@ if __name__ == "__main__":
                     result_file.write(",".join(header) + "\n")
             counter = 0
             for row in reader:
+                while not is_internet_available():
+                    print("Waiting 30 seconds to check again ...")
+                    time.sleep(30)
                 counter += 1
                 print(counter, start_from)
                 print(row)

@@ -1,6 +1,7 @@
 import validators
 import unicodedata
 from urlparse import urlparse, urljoin
+import requests
 
 IGNORE_LINK_PATHS = {'', '/', '/activity', '/login', '/direct_messages', '/similar_to', '/tweetbutton',
                      '/notifications', '/media_signup', '/apirules', '/rules', '/devices', '/welcome', '/logo',
@@ -110,3 +111,18 @@ def check_name_in_link(link, name, email_name):
     all_flag = all_flag or all(check(email_name, path))
     if any_flag:
         return [link, str(any_flag), str(all_flag)]
+
+
+def is_internet_available(url='https://8.8.8.8', timeout=5):
+    try:
+        req = requests.get(url, timeout=timeout)
+        # HTTP errors are not raised by default, this statement does that
+        req.raise_for_status()
+        return True
+    except requests.HTTPError as e:
+        print("Checking internet connection failed, status code {0}.".format(
+        e.response.status_code))
+    except requests.ConnectionError:
+        print("No internet connection available.")
+    return False
+
