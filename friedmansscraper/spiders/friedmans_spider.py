@@ -47,6 +47,7 @@ class FriedmansSpider(scrapy.Spider):
             raise ValueError("%s must have a data" % type(self).__name__)
         if not result_filename:
             raise ValueError("%s must have a result file name" % type(self).__name__)
+        self.result_file = result_filename
         self.data = json.loads(base64.b64decode(data))
         self.logger.info(self.data)
         self.name_index = int(name_index)
