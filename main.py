@@ -69,18 +69,13 @@ if __name__ == "__main__":
             if not (os.path.isfile(result_filename) and continue_processing):
                 with open(result_filename, 'w') as result_file:
                     result_file.write(",".join(header) + "\n")
-            counter = 0
-            for row in reader:
+
+            def run_spider():
+                global counter
                 while not is_internet_available():
                     print("Waiting 30 seconds to check again ...")
                     time.sleep(30)
-                counter += 1
-                print(counter, start_from)
-                print(row)
-                if start_from > counter:
-                    continue
-                if counter > process_until:
-                    continue
+
                 cmd = [
                     'scrapy', 'crawl', 'twitter',
                     '-a', 'index={}'.format(index),
@@ -91,8 +86,20 @@ if __name__ == "__main__":
                 ]
                 print(" ".join(cmd))
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-                p.wait()
-                print(p.returncode)
+                return p.wait() == 0
+
+            counter = 0
+            for row in reader:
+                counter += 1
+                print(counter, start_from)
+                print(row)
+                if start_from > counter:
+                    continue
+                if counter > process_until:
+                    continue
+                while not run_spider():
+                    print("Crawler failed. Will try again")
+
     except Exception, e:
         traceback.print_exc()
     finally:

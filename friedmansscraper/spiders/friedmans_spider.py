@@ -1,4 +1,5 @@
 import json
+import sys
 import base64
 import scrapy
 import tldextract
@@ -63,6 +64,9 @@ class FriedmansSpider(scrapy.Spider):
 
     def spider_closed(self, spider):
         spider.logger.info('Spider closed: %s', spider.name)
+        if not is_internet_available():
+            spider.logger.info("Internet connection is not available. Will try again later...")
+            sys.exit(1)
         twitter_links = self.all_twitter_links
         self.logger.info(twitter_links)
         while len(self.data) < self.index:
